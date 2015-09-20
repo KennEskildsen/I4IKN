@@ -1,8 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="file_server.cpp">
+  <MonoDevelop.Ide.Workbench ActiveDocument="file_client.cpp">
     <Files>
-      <File FileName="file_server.cpp" Line="102" Column="12" />
+      <File FileName="file_client.cpp" Line="73" Column="30" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
