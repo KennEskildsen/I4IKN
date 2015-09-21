@@ -1,5 +1,0 @@
-Name: LIB-c
-Description: 
-Version: 0.1
-Libs: -L"/root/Projects/Exercise_8_c/LIB-c/bin/Debug" -l-c
-Cflags: -I"/root/Projects/Exercise_8_c/LIB-c"
