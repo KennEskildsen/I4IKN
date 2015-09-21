@@ -105,24 +105,34 @@ Underviser:		& Torben Gregersen 								\\		% Underviser
 \newpage
 \section{Formål}
 
-blablablablabalblablabla
+Skriv en iterativ TCP-server med support for en client ad gangen, som kan modtage
+en tekststreng fra en client. Serveren skal køre i en virtuel Linux-maskine.
+Tekststrengen skal indeholde et filnavn + en eventuel stiangivelse. Tilsammen skal
+informationen i tekststrengen udpege en fil af en vilkårlig type/størrelse beliggende i
+serveren, som en tilsluttet client ønsker at hente fra serveren. Hvis filen ikke findes
+skal serveren returnere en fejlmelding til client’en. Hvis filen findes skal den overføres
+fra server til client i segmenter på 1000 bytes ad gangen – indtil filen er overført
+fuldstændigt. Serverens portnummer skal være 9000. Server-applikationen skal
+kunne startes fra en terminal med kommandoen.
+%./file_server (for C/C++ applikationers vedkommende) %TODO
 
-% If you have more than one objective, uncomment the below:
-\begin{description}
-	\item[Delopgave 1] \hfill \\
-		blablabla 1 text
-	\item[Delopgave 2] \hfill \\
-		blablabla
-\end{description}
+%Den samlede sourceskode til file_server.cpp ses på Bilag 1. 
 
- 
+Herunder vil udvalgte dele af koden blive beskrevet.
+
+
+\begin{lstlisting}
+
+\end{lstlisting}  
+
+
+
 %----------------------------------------------------------------------------------------
 %	SEKTION 2
 %----------------------------------------------------------------------------------------
 \newpage
 \section{Udførelse}
 
-blablablabla
 
 
 
