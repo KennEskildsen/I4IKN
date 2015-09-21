@@ -1,8 +1,8 @@
 //============================================================================
 // Name        : file_server.cpp
-// Author      : Lars Mortensen
+// Author      : I4IKN Gruppe 8
 // Version     : 1.0
-// Description : file_server in C++, Ansi-style
+// Description : file_server in C++
 //============================================================================
 
 #include <iostream>
@@ -16,14 +16,16 @@
 #include <netinet/in.h>
 #include <lib.h>
 
-#define BUF_SIZE 1000
+// Buffer til afsendelse
+#define BUF_SIZE 1000							
 
 using namespace std;
-
+// SendFile funktion
 void sendFile(const char* fileName, int connfd);
+// Test funktion (findes filen)
 int testIfFileExist(const char* fileName);
 
-
+// STD error-funktion
 void error(const char *msg)
 {
     perror(msg);
@@ -34,7 +36,7 @@ int main(int argc, char *argv[])
 {
      int sockfd, connfd, portno;
      socklen_t clilen;
-     char buffer[256];
+     char buffer[256];						
      struct sockaddr_in serv_addr, cli_addr;
      int n;
      if (argc < 2) {
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
      sockfd = socket(AF_INET, SOCK_STREAM, 0);
      if (sockfd < 0) 
         error("ERROR opening socket");
-//bzero sætter alle værdier i en buffer til 0
+//bzero sætter alle værdier i serv_addr til 0
      bzero((char *) &serv_addr, sizeof(serv_addr));
 //atoi konverterer ascii to integer. 
      portno = atoi(argv[1]);
@@ -55,7 +57,7 @@ int main(int argc, char *argv[])
      serv_addr.sin_family = AF_INET;
      serv_addr.sin_addr.s_addr = INADDR_ANY;
      serv_addr.sin_port = htons(portno);
-//bind binder adressen til serveren. Ved fejl er adressen sikkert allerede brugt 
+//bind binder Socket-adr til server-adr. Ved fejl er adressen sikkert allerede brugt 
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
               sizeof(serv_addr)) < 0){ 
               close(sockfd);
@@ -71,7 +73,7 @@ int main(int argc, char *argv[])
      	  close(sockfd);
           error("ERROR on accept");
      }
-//igen sættes en buffer til 0
+//Char-buffer sættes til 0
      bzero(buffer,256);
 
 //forbindelsen er nu oprettet. Hvilken fil skal sendes?
@@ -85,7 +87,7 @@ int main(int argc, char *argv[])
 
 
 // Test om filen eksisterer 
-	 buffer[strlen(buffer)-1]=0; // for at kunne bruge buffer skal vi fjerne null termineringen 
+	 buffer[strlen(buffer)-1]=0; // for at kunne bruge buffer skal null-termineringen fjernes 
 	 if (testIfFileExist(buffer)){
 	 		 write(connfd,"\nERROR file does not exist",26);
      		 close(connfd);
@@ -109,6 +111,7 @@ int main(int argc, char *argv[])
      return 0; 
 }
 
+
 int testIfFileExist(const char* fileName){
 
      FILE *fp = fopen(fileName,"r");
@@ -124,7 +127,7 @@ int testIfFileExist(const char* fileName){
 
 void sendFile(const char* fileName, int connfd)
 {
-        /* Open the file that we wish to transfer */
+        // Fil der ønskes afsendt
         FILE *fp = fopen(fileName,"r");
         if(fp==NULL)
         {
@@ -132,25 +135,22 @@ void sendFile(const char* fileName, int connfd)
             return;
         }
 
-        /* Read data from file and send it */
+        // data læses fra filen og afsendes
         while(1)
         {
-            /* First read file in chunks of BUF_SIZE bytes */
+            // Data brydes op i BUF_SIZE stykker
             unsigned char buff[BUF_SIZE]={0};
             int nread = fread(buff,1,BUF_SIZE,fp);
             printf("Bytes read %d \n", nread);
 
-            /* If read was success, send data. */
+           // Hvis læsning lykkes afsendes filen
             if(nread > 0)
             {
                 printf("Sending \n");
                 write(connfd, buff, nread);
             }
 
-            /*
-             * There is something tricky going on with read ..
-             * Either there was error, or we reached end of file.
-             */
+            // Her tjekkes på placereing af fp.
             if (nread < BUF_SIZE)
             {
                 if (feof(fp))
