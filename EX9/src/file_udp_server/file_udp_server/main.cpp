@@ -20,13 +20,6 @@
 
 using namespace std;
 
-void sendFile(const char* fileName, int connfd);
-
-void error(const char *msg)
-{
-    perror(msg);
-    exit(1);
-}
 
 int main(int argc, char *argv[])
 {
