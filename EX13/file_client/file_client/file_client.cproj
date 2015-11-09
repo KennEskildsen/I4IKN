@@ -3,40 +3,34 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{10C53A8D-3A2D-409D-ADEE-D3C7B5AA7C8B}</ProjectGuid>
-    <Target>Bin</Target>
-    <Language>CPP</Language>
+    <ProjectGuid>{2817AEBC-AB67-41C9-AB5E-9D0B08BA3415}</ProjectGuid>
     <Compiler>
       <Compiler ctype="GppCompiler" />
     </Compiler>
+    <Language>CPP</Language>
+    <Target>Bin</Target>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug</OutputPath>
+    <OutputName>file_client</OutputName>
+    <CompileTarget>Bin</CompileTarget>
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OutputName>LIB</OutputName>
-    <CompileTarget>StaticLibrary</CompileTarget>
-    <Includes>
-      <Includes>
-        <Include>${ProjectDir}</Include>
-      </Includes>
-    </Includes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
+    <OutputName>file_client</OutputName>
+    <CompileTarget>Bin</CompileTarget>
+    <OptimizationLevel>3</OptimizationLevel>
     <DefineSymbols>MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OptimizationLevel>3</OptimizationLevel>
-    <OutputName>LIB</OutputName>
-    <CompileTarget>StaticLibrary</CompileTarget>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="lib.h" />
+    <Compile Include="main.cpp" />
+    <Compile Include="Link.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="lib.cpp" />
+    <None Include="Link.h" />
   </ItemGroup>
 </Project>
