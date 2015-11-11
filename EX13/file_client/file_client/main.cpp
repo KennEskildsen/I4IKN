@@ -10,8 +10,8 @@ Link *linklayer;
 int main(int argc, char** argv)
 {
 	linklayer = new Link(BUFSIZE);
-	char buf[]="HELLO WORLD!";
-	linklayer->send(buf,12);
+	char buf[]="HELLO WORLD!!HELLO WORLD!";
+	linklayer->send(buf,25);
 
 	//char buf2[BUFSIZE]={0};
 	//linklayer->receive(buf2,BUFSIZE);
