@@ -9,8 +9,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <iostream>
 #include <ezV24/ezV24.h>
+#include <stdio.h>   
 
 class Link
 {
