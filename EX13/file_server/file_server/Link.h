@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <iostream>
+#include <ezV24/ezV24.h>
 
 class Link
 {
@@ -20,6 +21,7 @@ public:
 	int receive(char buf[], short size);
 private:
 	char *buffer;
+	v24_port_t *serialPort;
 };
 
 

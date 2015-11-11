@@ -31,19 +31,17 @@ Link::Link(int bufsize)
 
 void Link::send(char buf[], short size)
 {
-	int add = 3;
-	char *sendBuf;
+	int add = 2;
 
 	for(int i=0; i<size; i++)
 	{
 		if(buf[i]=='A' || buf[i]=='B')
 			add++;
 	}
-
-	sendBuf = new char[size+add];
-	sendBuf[0]='A';
-	sendBuf[size+add-2]='A';
-	sendBuf[size+add-1]='\r';
+			
+	buffer[0]='A';
+	buffer[size+add-1]='A';
+	//sendBuf[size+add-1]='\r';
 
 	int a,i;
 	a=1;
@@ -51,29 +49,28 @@ void Link::send(char buf[], short size)
 	for(i=0; i<size; i++)
 	{
 		if(!(buf[i]=='A' || buf[i]=='B'))
-			sendBuf[i+a]=buf[i];
+			buffer[i+a]=buf[i];
 
 		else if(buf[i]=='A')
 	    {
-			sendBuf[i+a]='B';
-			sendBuf[i+a+1]='C';
+			buffer[i+a]='B';
+			buffer[i+a+1]='C';
 			a++;
 	    }
 		else
 		{
-			sendBuf[i+a]='B';
-			sendBuf[i+a+1]='D';
+			buffer[i+a]='B';
+			buffer[i+a+1]='D';
 			a++;
 		}
 	}
 		
 
-	for(int i=0; i<size+add+2; i++)
-		std::cout<<sendBuf[i];
+	for(int i=0; i<size+add; i++)
+		std::cout<<buffer[i];
 		std::cout<<std::endl;
 
-	v24Puts(serialPort,sendBuf);
-	delete[] sendBuf;
+	v24Write(serialPort,(const unsigned char*)buffer,size+add);
 }
 
 
@@ -81,16 +78,15 @@ int Link::receive(char buf[], short size)
 {
 	int bytesRead =0;
 	int decr;
-	char recieveBuf[size*2];
 
 	char c;
 	while(c!='A')
-			v24Gets(serialPort,&c,1);
+			v24Read(serialPort,(unsigned char*)&c,1);
 
 	do
 	{
-		v24Gets(serialPort,&c,1);
-		recieveBuf[bytesRead]=c;
+		v24Read(serialPort,(unsigned char*)&c,1);
+		buffer[bytesRead]=c;
 		bytesRead++;
 		if(bytesRead > size*2)
 		{
@@ -102,14 +98,14 @@ int Link::receive(char buf[], short size)
 	int a = 0;
 	for(int i=0; i<size; i++)
 	{
-		if(!(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='C') && !(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='D') && !(recieveBuf[i+a]=='A'))
-			buf[i]=recieveBuf[i+a];
-		else if(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='C')
+		if(!(buffer[i+a]=='B' && buffer[i+1+a]=='C') && !(buffer[i+a]=='B' && buffer[i+1+a]=='D') && !(buffer[i+a]=='A'))
+			buf[i]=buffer[i+a];
+		else if(buffer[i+a]=='B' && buffer[i+1+a]=='C')
 		{
 			buf[i]='A';
 			a++;
 		}
-	    else if(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='D')
+	    else if(buffer[i+a]=='B' && buffer[i+1+a]=='D')
 	    {
 			buf[i]='B';
 			a++;

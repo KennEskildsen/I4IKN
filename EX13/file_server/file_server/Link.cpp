@@ -1,8 +1,30 @@
 ﻿#include "Link.h"
 
+#include <stdio.h>   /* Standard input/output definitions */
+#include <string.h>  /* String function definitions */
+#include <unistd.h>  /* UNIX standard function definitions */
+#include <fcntl.h>   /* File control definitions */
+#include <errno.h>   /* Error number definitions */
+#include <termios.h> /* POSIX terminal control definitions */
 
 Link::Link(int bufsize)
 {
+	buffer = new char[(bufsize*2)+2];
+	
+    serialPort=v24OpenPort("/dev/ttyS1",V24_STANDARD);
+    if ( serialPort==NULL )
+    {
+        fputs("error: sorry, open failed!\n",stderr);
+        exit(1);
+    }
+
+    int rc=v24SetParameters(serialPort,V24_B115200,V24_8BIT,V24_NONE);
+    if ( rc!=V24_E_OK )
+    {
+        fputs("error: setup of the port failed!\n",stderr);
+        v24ClosePort(serialPort);
+        exit(1);
+    }
 
 }
 
@@ -10,17 +32,16 @@ Link::Link(int bufsize)
 void Link::send(char buf[], short size)
 {
 	int add = 2;
-	char *sendBuf;
 
 	for(int i=0; i<size; i++)
 	{
 		if(buf[i]=='A' || buf[i]=='B')
 			add++;
 	}
-
-	sendBuf = new char[size+add];
-	sendBuf[0]='A';
-	sendBuf[size+add-1]='A';
+			
+	buffer[0]='A';
+	buffer[size+add-1]='A';
+	//sendBuf[size+add-1]='\r';
 
 	int a,i;
 	a=1;
@@ -28,32 +49,28 @@ void Link::send(char buf[], short size)
 	for(i=0; i<size; i++)
 	{
 		if(!(buf[i]=='A' || buf[i]=='B'))
-			sendBuf[i+a]=buf[i];
+			buffer[i+a]=buf[i];
 
 		else if(buf[i]=='A')
 	    {
-			sendBuf[i+a]='B';
-			sendBuf[i+a+1]='C';
+			buffer[i+a]='B';
+			buffer[i+a+1]='C';
 			a++;
 	    }
 		else
 		{
-			sendBuf[i+a]='B';
-			sendBuf[i+a+1]='D';
+			buffer[i+a]='B';
+			buffer[i+a+1]='D';
 			a++;
 		}
 	}
+		
 
-	int fd = open ("/dev/ttyS1", O_RDWR | O_NOCTTY | O_SYNC);
-	if (fd < 0)
-	{	
-        	std::cout<<"Error opening serialport /dev/ttyS1"<<std::endl;
-        	return;
-	}
+	for(int i=0; i<size+add; i++)
+		std::cout<<buffer[i];
+		std::cout<<std::endl;
 
-	write (fd, sendBuf, size+add+2); 
-	close(fd);
-	delete[] sendBuf;
+	v24Write(serialPort,(const unsigned char*)buffer,size+add);
 }
 
 
@@ -61,22 +78,15 @@ int Link::receive(char buf[], short size)
 {
 	int bytesRead =0;
 	int decr;
-	char recieveBuf[size*2];
-	int fd = open ("/dev/ttyS1", O_RDWR | O_NOCTTY | O_SYNC);
-	if (fd < 0)
-	{	
-        	std::cout<<"Error opening serialport /dev/ttyS1"<<std::endl;
-        	return -1;
-	}
 
 	char c;
 	while(c!='A')
-			read (fd, &c, 1); //Start modtaget
+			v24Read(serialPort,(unsigned char*)&c,1);
 
 	do
 	{
-		read (fd, &c, 1); 
-		recieveBuf[bytesRead]=c;
+		v24Read(serialPort,(unsigned char*)&c,1);
+		buffer[bytesRead]=c;
 		bytesRead++;
 		if(bytesRead > size*2)
 		{
@@ -85,28 +95,30 @@ int Link::receive(char buf[], short size)
 		}
 	}while(c!='A'); //Slut modtaget
 			
-	int a = 1;
+	int a = 0;
 	for(int i=0; i<size; i++)
 	{
-		if(!(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='C') && !(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='D') && !(recieveBuf[i+a]=='A'))
-			buf[i]=recieveBuf[i+a];
-		else if(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='C')
+		if(!(buffer[i+a]=='B' && buffer[i+1+a]=='C') && !(buffer[i+a]=='B' && buffer[i+1+a]=='D') && !(buffer[i+a]=='A'))
+			buf[i]=buffer[i+a];
+		else if(buffer[i+a]=='B' && buffer[i+1+a]=='C')
 		{
 			buf[i]='A';
 			a++;
 		}
-	    else if(recieveBuf[i+a]=='B' && recieveBuf[i+1+a]=='D')
+	    else if(buffer[i+a]=='B' && buffer[i+1+a]=='D')
 	    {
 			buf[i]='B';
 			a++;
 		}
 	}
 
-	close(fd);
 	return bytesRead-a-2;
 }
 
 Link::~Link()
 {
-
+	if(serialPort != NULL)
+		v24ClosePort(serialPort);
+	if(buffer != NULL)
+		delete [] buffer;
 }
