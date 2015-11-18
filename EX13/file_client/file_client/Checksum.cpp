@@ -21,27 +21,20 @@ namespace Transport
 
 	bool Checksum::checkChecksum(char buf[], short size)
 	{
-		char buffer[size];
+		char buffer[size-CHKSUMSIZE];
 
-		memcpy(buffer, buf, size); 
-		calcChecksum(buffer,size);
-
-		if(buffer[0]==buf[0] && buffer[1]==buf[1])
-			return true;
-		else
-			return false;
-
+		memcpy(buffer, buf+CHKSUMSIZE, size-CHKSUMSIZE); 
+		return( checksum(buffer, size-CHKSUMSIZE) == (long)((unsigned char)buf[CHKSUMHIGH] << 8 | (unsigned char)buf[CHKSUMLOW]));
 	}
 
 	void Checksum::calcChecksum (char buf[], short size)
 	{
-		char buffer[size];
+		char buffer[size-CHKSUMSIZE];
 		long sum = 0;
 
-		memcpy(buffer, buf+ACKSIZE, size); 
-		sum = checksum(buffer, size);
+		memcpy(buffer, buf+CHKSUMSIZE, size-CHKSUMSIZE); 
+		sum = checksum(buffer, size-CHKSUMSIZE);
 		buf[CHKSUMHIGH] = ((sum >> 8) & 255);
 		buf[CHKSUMLOW] = (sum & 255);
 	}
 }
-
