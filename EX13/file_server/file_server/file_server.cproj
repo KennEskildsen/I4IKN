@@ -30,8 +30,13 @@
   <ItemGroup>
     <Compile Include="Link.cpp" />
     <Compile Include="main.cpp" />
+    <Compile Include="Transport.cpp" />
+    <Compile Include="Checksum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Link.h" />
+    <None Include="TransConst.h" />
+    <None Include="Transport.h" />
+    <None Include="Checksum.h" />
   </ItemGroup>
 </Project>

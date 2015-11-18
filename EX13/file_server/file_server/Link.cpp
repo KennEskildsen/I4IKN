@@ -58,7 +58,7 @@ void Link::send(char buf[], short size)
 		}
 	}
 		
-
+	std::cout<<"Linklayer has sent: ";
 	for(int i=0; i<size+add; i++)
 		std::cout<<buffer[i];
 		std::cout<<std::endl;
@@ -104,8 +104,13 @@ int Link::receive(char buf[], short size)
 			a++;
 		}
 	}
+		
+		std::cout<<"Linklayer received: ";
+		for(int i=0; i<bytesRead-a-1; i++)
+		std::cout<<buffer[i];
+		std::cout<<"\nBytes read: "<<bytesRead-a-1<<std::endl;
 
-	return bytesRead-a-2;
+	return bytesRead-a-1;
 }
 
 Link::~Link()

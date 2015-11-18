@@ -81,15 +81,21 @@ namespace Transport
 	void Transport::send(char buf[], short size)
 	{
 		memcpy(this->buffer+ACKSIZE, buf, size);
-		checksum->calcChecksum(buffer,size);
+
 		buffer[SEQNO]=seqNo;
 		buffer[TYPE]=DATA;//type = data
-		    
+		checksum->calcChecksum(buffer,size+ACKSIZE);
+		 
 		link->send(this->buffer,size+ACKSIZE);//header + data
 
-		if(!receiveAck())
+		while(!receiveAck())
+		{
 			std::cout<<"Error did not receive ACK in transportlayer\r\n";
+			link->send(this->buffer,size+ACKSIZE);//header + data
+		}
 			
+		std::cout<<"ACK receieved in transportlayer\r\n";
+
 		return;
 	}
 
@@ -104,18 +110,18 @@ namespace Transport
 		short bytesRead;
 		bytesRead = link->receive(this->buffer,size+ACKSIZE);
 
-		if(!checksum->checkChecksum(this->buffer,size))
+		while(!checksum->checkChecksum(this->buffer,bytesRead))
 		{
+			bytesRead = link->receive(this->buffer,size+ACKSIZE);
 			std::cout<<"Error in checksum\r\n";
 			sendAck(false);
-			return -1;
 		}
-		else
-		{
-			sendAck(true);
-			memcpy(buf,buffer+ACKSIZE,bytesRead);
-			return bytesRead;
-		}
+
+		sendAck(true);
+		std::cout<<"Checksum Ok\r\n";
+		memcpy(buf,buffer+ACKSIZE,bytesRead-ACKSIZE);
+		return bytesRead-ACKSIZE;
+		
 	}
 }
 
