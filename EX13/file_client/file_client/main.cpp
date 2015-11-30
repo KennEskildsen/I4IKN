@@ -18,30 +18,33 @@ Transport::Transport *transportlayer;
 
 void receiveFile(const char fileName[], Transport::Transport *transportlayer_)
 {
+	int n;
 	// Opret en fil hvor dataen vil blive modtaget
     FILE *fp = fopen(fileName, "w");
     if(NULL == fp)
     {
-        cout<<"Error opening file";
+        cout<<"Error creating file";
         return;
     }
+	fclose (fp);
 
     // Modtag data i stykker af BUF_SIZE i bytes
     int bytesReceived = 0;
     char buff[BUFSIZE];
     memset(buff, '0', sizeof(buff));
-    while((bytesReceived = transportlayer_->receive(buff,BUFSIZE) > 0))
+
+    do
     {
+    	fp = fopen(fileName, "a");
+    	bytesReceived = transportlayer_->receive(buff,BUFSIZE);
         cout<<"Bytes received: "<<bytesReceived<<endl;
-        fwrite(buff, 1,bytesReceived,fp);
-    }
+        n= fwrite(buff, sizeof(char), bytesReceived,fp);
+        fclose (fp);
+    }while(bytesReceived);
+        
+    cout<<"File copied\n";
 
-    if(bytesReceived < 0)
-    {
-        cout<<"\n Read Error \n";
-    }
 
-     cout<<"File copied\n";
 }
 
 int main(int argc, char** argv)

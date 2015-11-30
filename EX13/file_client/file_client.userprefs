@@ -1,15 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="file_client/main.cpp">
+  <MonoDevelop.Ide.Workbench ActiveDocument="file_client/Transport.cpp">
     <Files>
-      <File FileName="file_client/main.cpp" Line="36" Column="23" />
-      <File FileName="file_client/Transport.cpp" Line="128" Column="1" />
+      <File FileName="file_client/main.cpp" Line="63" Column="6" />
+      <File FileName="file_client/Transport.cpp" Line="82" Column="3" />
+      <File FileName="file_client/Link.cpp" Line="90" Column="26" />
+      <File FileName="file_client/Checksum.cpp" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/root/Desktop/Github/I4IKN/EX13/file_client/file_client/main.cpp" line="32" column="1" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

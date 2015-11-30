@@ -15,7 +15,7 @@ namespace Transport
 	{
 		link = new Link(BUFSIZE+ACKSIZE);
 		checksum = new Checksum();
-		buffer = new char[BUFSIZE+ACKSIZE];
+		buffer = new char[BUFSIZE*2+ACKSIZE];
 		seqNo = 0;
 		old_seqNo = DEFAULT_SEQNO;
 		errorCount = 0;
@@ -80,12 +80,14 @@ namespace Transport
 	/// </param>
 	void Transport::send(char buf[], short size)
 	{
+
 		memcpy(this->buffer+ACKSIZE, buf, size);
 
 		buffer[SEQNO]=seqNo;
 		buffer[TYPE]=DATA;//type = data
 		checksum->calcChecksum(buffer,size+ACKSIZE);
-		 
+
+
 		link->send(this->buffer,size+ACKSIZE);//header + data
 
 		while(!receiveAck())
@@ -108,13 +110,15 @@ namespace Transport
 	short Transport::receive(char buf[], short size)
 	{
 		short bytesRead;
+	
 		bytesRead = link->receive(this->buffer,size+ACKSIZE);
 
 		while(!checksum->checkChecksum(this->buffer,bytesRead))
 		{
-			bytesRead = link->receive(this->buffer,size+ACKSIZE);
 			std::cout<<"Error in checksum\r\n";
+			std::cout<<"Bytes read: "<<bytesRead-ACKSIZE<<"\r\n";
 			sendAck(false);
+			bytesRead = link->receive(this->buffer,size+ACKSIZE);
 		}
 
 		sendAck(true);
