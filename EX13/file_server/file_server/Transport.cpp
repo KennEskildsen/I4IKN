@@ -80,13 +80,23 @@ namespace Transport
 	/// </param>
 	void Transport::send(char buf[], short size)
 	{
+
 		memcpy(this->buffer+ACKSIZE, buf, size);
 
 		buffer[SEQNO]=seqNo;
 		buffer[TYPE]=DATA;//type = data
 		checksum->calcChecksum(buffer,size+ACKSIZE);
-		 
+
+		// Fremprovokeret fejl 
+		errorCount++;
+		if(errorCount == 5)
+			buffer[0]++;
+
 		link->send(this->buffer,size+ACKSIZE);//header + data
+
+		if(errorCount==5)
+			buffer[0]--;
+
 
 		while(!receiveAck())
 		{
@@ -112,9 +122,9 @@ namespace Transport
 
 		while(!checksum->checkChecksum(this->buffer,bytesRead))
 		{
+			sendAck(false);
 			bytesRead = link->receive(this->buffer,size+ACKSIZE);
 			std::cout<<"Error in checksum\r\n";
-			sendAck(false);
 		}
 
 		sendAck(true);
