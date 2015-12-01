@@ -39,8 +39,8 @@ void sendFile(const char* fileName, int length, Transport::Transport *transportl
 		memcpy(buf, fileName, length);
 		buf[length-1]=0;
 
-        FILE *fp = fopen(buf,"r");
-        if(fp==NULL)
+        int fd = open(buf, O_RDONLY);
+        if(fd == 0)
         {
             printf("\nError opening file\n");
             return;
@@ -51,27 +51,22 @@ void sendFile(const char* fileName, int length, Transport::Transport *transportl
         {
             // Data brydes op i BUF_SIZE stykker
             char buff[BUFSIZE]={0};
-            int nread = fread(buff,1,BUFSIZE,fp);
+
+            int nread = read(fd,buff,BUFSIZE);
             printf("Bytes read %d \n", nread);
 
            // Hvis læsning lykkes afsendes filen
             if(nread > 0)
             {
                 printf("Sending \n");
-                transportlayer_->send(buff,BUFSIZE);
+                transportlayer_->send(buff,nread);
             }
-
-            // Her tjekkes på placereing af fp.
-            if (nread < BUFSIZE)
-            {
-                if (feof(fp))
-                    printf("End of file\n");
-                if (ferror(fp))
-                    printf("Error reading\n");
-                break;
+			else
+			{
+            printf("File sent \n");
+            break;
             }
         }
-		fclose(fp);
     }	
         
 
@@ -84,7 +79,7 @@ int main(int argc, char** argv)
 
 //Hvilken fil skal sendes?
 	n = transportlayer->receive(buffer, BUFSIZE);
-    printf("File to send: %s\n",buffer);
+    printf("File to send: '%s'\n",buffer);
 	
 // Test om filen eksisterer 
 	if (testIfFileExist(buffer,n)==0)
@@ -92,6 +87,7 @@ int main(int argc, char** argv)
 		 char buf[]="ERROR file does not exist\n";
 		 transportlayer->send(buf,26);
  		 cout<<"ERROR file does not exist"<<endl;
+ 		 exit(1);
 	 }
 	 else 
 	 {

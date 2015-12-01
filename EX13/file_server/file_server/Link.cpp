@@ -22,6 +22,7 @@ Link::Link(int bufsize)
 }
 
 
+
 void Link::send(char buf[], short size)
 {
 	int add = 2;
@@ -58,10 +59,7 @@ void Link::send(char buf[], short size)
 		}
 	}
 		
-	std::cout<<"Linklayer has sent: ";
-	for(int i=0; i<size+add; i++)
-		std::cout<<buffer[i];
-		std::cout<<std::endl;
+	std::cout<<"Linklayer has sent: "<<size+add<<" bytes\r\n";
 
 	v24Write(serialPort,(const unsigned char*)buffer,size+add);
 }
@@ -72,13 +70,14 @@ int Link::receive(char buf[], short size)
 	int bytesRead =0;
 	int decr;
 
-	char c;
+	char c = 0;
+
 	while(c!='A')
-			v24Read(serialPort,(unsigned char*)&c,1);
+			c=v24Getc(serialPort);
 
 	do
 	{
-		v24Read(serialPort,(unsigned char*)&c,1);
+		c=v24Getc(serialPort);
 		buffer[bytesRead]=c;
 		bytesRead++;
 		if(bytesRead > size*2)
@@ -89,7 +88,7 @@ int Link::receive(char buf[], short size)
 	}while(c!='A'); //Slut modtaget
 			
 	int a = 0;
-	for(int i=0; i<size; i++)
+	for(int i=0; i<bytesRead-1; i++)
 	{
 		if(!(buffer[i+a]=='B' && buffer[i+1+a]=='C') && !(buffer[i+a]=='B' && buffer[i+1+a]=='D') && !(buffer[i+a]=='A'))
 			buf[i]=buffer[i+a];
@@ -105,10 +104,7 @@ int Link::receive(char buf[], short size)
 		}
 	}
 		
-		std::cout<<"Linklayer received: ";
-		for(int i=0; i<bytesRead-a-1; i++)
-		std::cout<<buffer[i];
-		std::cout<<"\nBytes read: "<<bytesRead-a-1<<std::endl;
+		std::cout<<"Linklayer has read: "<<bytesRead+1<<" bytes\r\n";
 
 	return bytesRead-a-1;
 }
